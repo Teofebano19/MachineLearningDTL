@@ -13,7 +13,7 @@ import weka.core.*;
 
 /**
  *
- * @author Teofebano
+ * @author Teofebano, Andrey
  */
 public class MyID3 extends Classifier{
     // Attribute
