@@ -26,6 +26,7 @@ public class MyJ48 extends Classifier{
     private double classValue;
     private Attribute classAttribute;
     private double splitValue;
+    public double threshold;
     
     // Code
     public MyJ48(){
@@ -90,7 +91,7 @@ public class MyJ48 extends Classifier{
     
     private Vector<Instances> split(Instances data, Attribute attr){
         Vector<Instances> group = new Vector<Instances>(attr.numValues());
-        if (attr.isNominal()) {
+        if (attr.isNominal()){    
             for (int i = 0; i < attr.numValues(); i++) {
                 group.add(new Instances(data, data.numInstances()));
             }
@@ -101,9 +102,25 @@ public class MyJ48 extends Classifier{
             for (int i=0;i<group.size();i++){
                 group.elementAt(i).compactify();
             }
-        } else {
-            double splitPoint
-            throw new UnsupportedOperationException("Ntar dulu ya");
+        }
+        else{
+            for (int i = 0; i < attr.numValues(); i++) {
+                group.add(new Instances(data, data.numInstances()));
+            }
+            double threshold = countThreshold(data, attr);
+            for (int i=0;i<data.numInstances();i++){
+                int av = 0;
+                if (data.instance(i).value(attr)<threshold){
+                    av = 0;
+                }
+                else{
+                    av = 1;
+                }
+                group.elementAt(av).add(data.instance(i));
+            }
+            for (int i=0;i<group.size();i++){
+                group.elementAt(i).compactify();
+            }
         }
         return group;
     }
@@ -126,6 +143,7 @@ public class MyJ48 extends Classifier{
             attrSeparator = null;
             result = new double[trainingData.numClasses()];
             classValue = Instance.missingValue();
+            threshold = Double.MIN_VALUE;
             return;
         }
         
@@ -141,9 +159,10 @@ public class MyJ48 extends Classifier{
         }
         int index = listGR.indexOf(Collections.max(listGR));
         attrSeparator = trainingData.attribute(index);
+        threshold = countThreshold(trainingData, attrSeparator);
         
         // Build Tree
-        if (listGR.elementAt(index) == 0){
+        if (listGR.elementAt(index) == 0){ // leaf
             attrSeparator = null;
             result = new double[trainingData.numClasses()];
             for (int i=0;i<result.length;i++){
@@ -153,7 +172,7 @@ public class MyJ48 extends Classifier{
             classValue = Utils.maxIndex(result);
             classAttribute = trainingData.classAttribute();
         }
-        else{
+        else{ // branch
             Vector<Instances> newData = split(trainingData,attrSeparator);
             child = new MyJ48[attrSeparator.numValues()];
             for (int i=0;i<child.length;i++){
@@ -178,7 +197,19 @@ public class MyJ48 extends Classifier{
             return classValue;
         }
         else{
-            return child[(int) testingData.value(attrSeparator)].classifyInstance(testingData);
+            if (attrSeparator.isNominal()){
+                return child[(int) testingData.value(attrSeparator)].classifyInstance(testingData);
+            }
+            else{
+                int av = 0;
+                if (testingData.value(attrSeparator)<threshold){
+                    av = 0;
+                }
+                else{
+                    av = 1;
+                }
+                return child[av].classifyInstance(testingData);
+            }
         }
     }    
     
@@ -194,22 +225,21 @@ public class MyJ48 extends Classifier{
         }
     }
     
-    public Instances toNominalInstance(Instances trainingData){
-        for (int i=0;i<trainingData.numAttributes();i++){
-            Attribute attr = trainingData.attribute(i);
-            Vector<Double> numericValue = new Vector<Double>();
-            for (int j=0;j<trainingData.numInstances();j++){
-                numericValue.add(trainingData.instance(j).value(attr));
-            }
-            
-            sort(numericValue);
-            
-            boolean splitted = false;
-            double cv = trainingData.instance(0).classValue();
-            for (int j=1;j<trainingData.numInstances()&&!splitted;j++){
-                if (trainingData.instance(j).classValue())
+    public double countThreshold(Instances trainingData, Attribute attr){
+        Vector<Double> numericValue = new Vector<Double>();
+        for (int j=0;j<trainingData.numInstances();j++){
+            numericValue.add(trainingData.instance(j).value(attr));
+        }
+        sort(numericValue);
+        boolean splitted = false;
+        double threshold = Double.MIN_VALUE;
+        for (int j=0;j<trainingData.numInstances()-1&&!splitted;j++){
+            if (trainingData.instance(j).classValue()!= trainingData.instance(j+1).classValue()){
+                splitted = true;
+                threshold = (trainingData.instance(j).value(attr) + trainingData.instance(j+1).value(attr))/2;
             }
         }
+        return threshold;
     }
     
     public void sort(Vector<Double> vector){
