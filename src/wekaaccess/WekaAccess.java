@@ -5,8 +5,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
-import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.trees.Id3;
 import weka.classifiers.trees.J48;
 import weka.core.Debug.Random;
 import weka.core.Instances;
@@ -157,6 +155,7 @@ public class WekaAccess {
     public static void main(String[] args) {
         Classifier DT = new J48();
         MyID3 mid3 = new MyID3();
+        MyJ48 my48 = new MyJ48();
         
         loadFile(SOURCE);
         
@@ -166,12 +165,10 @@ public class WekaAccess {
 //        learn10fold(data, mid3);
         
         // full training
-        learnFull(data, mid3);
+//        learnFull(data, mid3);
 //        learnFull(data, mid3);
         
         // unseen data
-        classifyUsingModel(mid3,SOURCE_UNLABELED);
         //classifyUsingModel(unseendata,DT);
     }
-    
 }
