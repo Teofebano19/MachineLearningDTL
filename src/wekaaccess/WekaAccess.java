@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.classifiers.trees.Id3;
 import weka.classifiers.trees.J48;
 import weka.core.Debug.Random;
 import weka.core.Instances;
@@ -19,8 +20,8 @@ import weka.filters.unsupervised.attribute.Remove;
  */
 public class WekaAccess {
     // Attribute
-    private static final String SOURCE = "data/weather.numeric.arff";
-    private static final String SOURCE_UNLABELED = "data/weather.nominal.unlabeled.arff";
+    private static final String SOURCE = "data/iris.arff";
+    private static final String SOURCE_UNLABELED = "data/iris.unlabeled.arff";
     private static final int NUMBER_FOLD = 10;
     private static final int PERCENTAGE = 66;
     private static Instances data, unseendata;
@@ -161,15 +162,16 @@ public class WekaAccess {
         
         
         // 10 fold
-//        learn10fold(data, mid3);
-//        learn10fold(data, mid3);
         learn10fold(data, my48);
+//        learn10fold(data, mid3);
+//        learn10fold(data, my48);
         
         // full training
+//        learnFull(data, my48);
 //        learnFull(data, mid3);
-//        learnFull(data, mid3);
+//        learnFull(data, my48);
         
         // unseen data
-        //classifyUsingModel(unseendata,DT);
+        classifyUsingModel(my48,SOURCE_UNLABELED);
     }
 }
