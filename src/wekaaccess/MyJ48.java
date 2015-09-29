@@ -156,11 +156,10 @@ public class MyJ48 extends Classifier{
         for (int i=0;i<listGR.size();i++){
             listGR.setElementAt(Double.valueOf(0), i);
         }
-        for (int i=0;i<trainingData.numAttributes();i++){
+        for (int i=0;i<trainingData.numAttributes()-2;i++){
             Attribute attr = trainingData.attribute(i);
             int attrIndex = attr.index();
             listGR.setElementAt(computeGR(trainingData, attr), attrIndex);
-            System.out.println("attr ke "+i+" : "+listGR.elementAt(attrIndex));
         }
         int index = listGR.indexOf(Collections.max(listGR));
         attrSeparator = trainingData.attribute(index);
@@ -226,6 +225,7 @@ public class MyJ48 extends Classifier{
         if (attrSeparator == null) {
             return result;
         } else { 
+            System.out.println((int) instance.value(attrSeparator));
             return child[(int) instance.value(attrSeparator)].distributionForInstance(instance);
         }
     }
