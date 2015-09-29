@@ -42,7 +42,12 @@ public class MyJ48 extends Classifier{
     }
     
     private double computeGR(Instances data, Attribute attr){
-        return (computeIG(data, attr)/computeSI(data, attr));
+        if (computeSI(data,attr)==0){
+            return computeIG(data, attr);
+        }
+        else{
+            return (computeIG(data, attr)/computeSI(data, attr));
+        }
     }
     
     private double computeSI(Instances data, Attribute attr){
@@ -50,7 +55,10 @@ public class MyJ48 extends Classifier{
        Vector<Instances> instances = split(data,attr);
        for (int i=0;i<attr.numValues();i++){
            if (instances.elementAt(i).numInstances() > 0){
-               SI += (instances.elementAt(i).numInstances() / data.numInstances()) * Utils.log2(instances.elementAt(i).numInstances() / data.numInstances());
+               double p = instances.elementAt(i).numInstances() / data.numInstances();
+               if (!Utils.eq(p, 0)) {
+                   SI += p * Utils.log2(p);
+               }
            }
        }
        SI *= -1;
@@ -156,6 +164,7 @@ public class MyJ48 extends Classifier{
             Attribute attr = trainingData.attribute(i);
             int attrIndex = attr.index();
             listGR.setElementAt(computeGR(trainingData, attr), attrIndex);
+            System.out.println("attr ke "+i+" : "+listGR.elementAt(attrIndex));
         }
         int index = listGR.indexOf(Collections.max(listGR));
         attrSeparator = trainingData.attribute(index);
@@ -176,6 +185,8 @@ public class MyJ48 extends Classifier{
             Vector<Instances> newData = split(trainingData,attrSeparator);
             child = new MyJ48[attrSeparator.numValues()];
             for (int i=0;i<child.length;i++){
+//                System.out.println("attr separator : "+attrSeparator);
+//                System.out.println("attr value ke : "+i);
                 child[i] = new MyJ48();
                 child[i].makeTree(newData.elementAt(i));
             }

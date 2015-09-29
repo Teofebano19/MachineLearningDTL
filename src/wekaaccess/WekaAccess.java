@@ -157,20 +157,22 @@ public class WekaAccess {
     public static void main(String[] args) {
         Classifier DT = new J48();
         MyID3 mid3 = new MyID3();
+        MyJ48 my48 = new MyJ48();
         
         loadFile(SOURCE);
         
         
         // 10 fold
-        learn10fold(data, mid3);
+//        learn10fold(data, mid3);
+        learn10fold(data, my48);
 //        learn10fold(data, mid3);
         
         // full training
-        learnFull(data, mid3);
+//        learnFull(data, mid3);
 //        learnFull(data, mid3);
         
         // unseen data
-        classifyUsingModel(DT,SOURCE_UNLABELED);
+//        classifyUsingModel(DT,SOURCE_UNLABELED);
         //classifyUsingModel(unseendata,DT);
     }
     
