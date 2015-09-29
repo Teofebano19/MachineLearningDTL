@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.trees.Id3;
 import weka.classifiers.trees.J48;
 import weka.core.Debug.Random;
 import weka.core.Instances;
@@ -52,8 +53,7 @@ public class WekaAccess {
             
             // Print
             System.out.println("=== Summary ===");
-            System.out.println(eval.toClassDetailsString());
-            System.out.println(eval.toMatrixString());
+            System.out.println(eval.toSummaryString());
         } catch (Exception ex) {
             Logger.getLogger(WekaAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -75,8 +75,7 @@ public class WekaAccess {
             
             // Print
             System.out.println("=== Summary ===");
-            System.out.println(eval.toClassDetailsString());
-            System.out.println(eval.toMatrixString());
+            System.out.println(eval.toSummaryString());
         } catch (Exception ex) {
             Logger.getLogger(WekaAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -156,18 +155,18 @@ public class WekaAccess {
     
     // main
     public static void main(String[] args) {
-        J48 DT = new J48();
+        Classifier DT = new J48();
         MyID3 mid3 = new MyID3();
         
         loadFile(SOURCE);
         
         
         // 10 fold
-        learn10fold(data, DT);
+        learn10fold(data, mid3);
 //        learn10fold(data, mid3);
         
         // full training
-        learnFull(data, DT);
+        learnFull(data, mid3);
 //        learnFull(data, mid3);
         
         // unseen data
