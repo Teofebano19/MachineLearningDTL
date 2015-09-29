@@ -83,6 +83,7 @@ public class MyID3 extends Classifier{
         return group;
     }
     
+    @Override
     public Capabilities getCapabilities() {
         Capabilities capa = super.getCapabilities();
         capa.disableAll();
