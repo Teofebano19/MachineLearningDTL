@@ -21,6 +21,7 @@ import weka.filters.unsupervised.attribute.Remove;
 public class WekaAccess {
     // Attribute
     private static final String SOURCE = "data/weather.nominal.arff";
+    private static final String SOURCE_UNLABELED = "data/weather.nominal.unlabeled.arff";
     private static final int NUMBER_FOLD = 10;
     private static final int PERCENTAGE = 66;
     private static Instances data, unseendata;
@@ -112,12 +113,12 @@ public class WekaAccess {
     }
     
     // classification
-    public static void classifyUsingModel(Instances testingData, Classifier classifier){
+    public static void classifyUsingModel(Instances testingData, Classifier classifier, String file){
         try {
             Classifier cls = classifier;
             cls.buildClassifier(testingData);
 
-            Instances unlabeled = DataSource.read("weather.nominal_unlabeled.arff");
+            Instances unlabeled = DataSource.read(file);
             unlabeled.setClassIndex(unlabeled.numAttributes() - 1);
 
             Instances labeled = new Instances(unlabeled);
@@ -166,9 +167,9 @@ public class WekaAccess {
         
         
         // 10 fold
-        learn10fold(data, NB);
-        learn10fold(data, DT);
-        learn10fold(data, mid3);
+//        learn10fold(data, NB);
+//        learn10fold(data, DT);
+//        learn10fold(data, mid3);
         
         // full training
 //        learnFull(data, NB);
