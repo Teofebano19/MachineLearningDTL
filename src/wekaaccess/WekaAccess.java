@@ -162,7 +162,7 @@ public class WekaAccess {
         
         
         // 10 fold
-        learn10fold(data, mid3);
+//        learn10fold(data, mid3);
 //        learn10fold(data, mid3);
         
         // full training
@@ -170,7 +170,7 @@ public class WekaAccess {
 //        learnFull(data, mid3);
         
         // unseen data
-        classifyUsingModel(DT,SOURCE_UNLABELED);
+        classifyUsingModel(mid3,SOURCE_UNLABELED);
         //classifyUsingModel(unseendata,DT);
     }
     
