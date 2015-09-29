@@ -113,20 +113,17 @@ public class WekaAccess {
     }
     
     // classification
-    public static void classifyUsingModel(Instances testingData, Classifier classifier, String file){
+    public static void classifyUsingModel(Classifier classifier, String file){
         try {
-            Classifier cls = classifier;
-            cls.buildClassifier(testingData);
-
             Instances unlabeled = DataSource.read(file);
             unlabeled.setClassIndex(unlabeled.numAttributes() - 1);
 
             Instances labeled = new Instances(unlabeled);
             // label instances
             for (int i = 0; i < unlabeled.numInstances(); i++) {
-                    double clsLabel = cls.classifyInstance(unlabeled.instance(i));
-                    labeled.instance(i).setClassValue(clsLabel);
-                    System.out.println(labeled.toString());
+                double clsLabel = classifier.classifyInstance(unlabeled.instance(i));
+                labeled.instance(i).setClassValue(clsLabel);
+                System.out.println(labeled.lastInstance().toString());
             }
         } catch (Exception e) {
                 // TODO Auto-generated catch block
@@ -159,7 +156,6 @@ public class WekaAccess {
     
     // main
     public static void main(String[] args) {
-        NaiveBayes NB = new NaiveBayes();
         J48 DT = new J48();
         MyID3 mid3 = new MyID3();
         
@@ -167,17 +163,15 @@ public class WekaAccess {
         
         
         // 10 fold
-//        learn10fold(data, NB);
-//        learn10fold(data, DT);
+        learn10fold(data, DT);
 //        learn10fold(data, mid3);
         
         // full training
-//        learnFull(data, NB);
-//        learnFull(data, DT);
+        learnFull(data, DT);
 //        learnFull(data, mid3);
         
         // unseen data
-        //classifyUsingModel(unseendata,NB);
+        classifyUsingModel(DT,SOURCE_UNLABELED);
         //classifyUsingModel(unseendata,DT);
     }
     
