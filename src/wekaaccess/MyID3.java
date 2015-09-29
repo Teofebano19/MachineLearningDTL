@@ -85,15 +85,16 @@ public class MyID3 extends Classifier{
     
     @Override
     public Capabilities getCapabilities() {
-        Capabilities capa = super.getCapabilities();
-        capa.disableAll();
+        Capabilities C = super.getCapabilities();
+        C.disableAll();
         
-        capa.enable(Capability.NOMINAL_ATTRIBUTES);
-        capa.enable(Capability.NOMINAL_CLASS);
-        capa.enable(Capability.MISSING_CLASS_VALUES);
-        capa.setMinimumNumberInstances(0);
+        C.enable(Capability.NOMINAL_ATTRIBUTES);
+        C.enable(Capability.NUMERIC_ATTRIBUTES);
+        C.enable(Capability.NOMINAL_CLASS);
+        C.enable(Capability.MISSING_CLASS_VALUES);
+        C.setMinimumNumberInstances(0);
 
-        return capa;
+        return C;
     }
     
     private void makeTree(Instances trainingData) {
@@ -138,13 +139,11 @@ public class MyID3 extends Classifier{
         }
     }
     
-    private void makeClassifier(Instances trainingData) throws Exception{
-        getCapabilities().testWithFail(trainingData);
-        trainingData.deleteWithMissingClass();
-        makeTree(trainingData);
-    }
-    
-   
+//    private void makeClassifier(Instances trainingData) throws Exception{
+//        getCapabilities().testWithFail(trainingData);
+//        trainingData.deleteWithMissingClass();
+//        makeTree(trainingData);
+//    }
     
     @Override
     public double classifyInstance(Instance testingData) throws NoSupportForMissingValuesException, Exception{
