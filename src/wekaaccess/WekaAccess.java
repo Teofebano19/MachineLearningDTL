@@ -21,7 +21,7 @@ import weka.filters.unsupervised.attribute.Remove;
  */
 public class WekaAccess {
     // Attribute
-    private static final String SOURCE = "data/weather.nominal.arff";
+    private static final String SOURCE = "data/weather.numeric.arff";
     private static final String SOURCE_UNLABELED = "data/weather.nominal.unlabeled.arff";
     private static final int NUMBER_FOLD = 10;
     private static final int PERCENTAGE = 66;

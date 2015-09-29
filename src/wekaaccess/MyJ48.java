@@ -112,7 +112,7 @@ public class MyJ48 extends Classifier{
             }
         }
         else{
-            for (int i = 0; i < attr.numValues(); i++) {
+            for (int i = 0; i < 2; i++) {
                 group.add(new Instances(data, data.numInstances()));
             }
             double threshold = countThreshold(data, attr);
