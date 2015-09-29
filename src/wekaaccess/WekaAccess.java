@@ -168,7 +168,7 @@ public class WekaAccess {
         // 10 fold
 //        learn10fold(data, NB);
 //        learn10fold(data, DT);
-        //learn10fold(data, mid3);
+        learn10fold(data, mid3);
         
         // full training
 //        learnFull(data, NB);

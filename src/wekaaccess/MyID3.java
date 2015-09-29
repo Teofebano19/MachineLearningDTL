@@ -13,14 +13,15 @@ import weka.core.*;
 
 /**
  *
- * @author Teofebano19
+ * @author Teofebano
  */
 public class MyID3 extends Classifier{
     // Attribute
-    private Vector<MyID3> child;
+    private MyID3[] child;
     private Attribute attrSeparator;
-    private Vector<Double> result;
+    private double[] result;
     private double classValue;
+    private Attribute classAttribute;
     
     // Code
     public MyID3(){
@@ -32,7 +33,6 @@ public class MyID3 extends Classifier{
         // Missing Class
         data = new Instances(data);
         data.deleteWithMissingClass();
-
         makeTree(data);
     }
     
@@ -49,15 +49,17 @@ public class MyID3 extends Classifier{
     
     private double computeEntropy(Instances data){
         double entropy = 0;
-        Vector<Double> classCounter = new Vector<Double>(data.numClasses());
+        Vector<Double> classCounter = new Vector<Double>();
+        classCounter.setSize(data.numClasses());
+        for (int i=0;i<classCounter.size();i++){
+            classCounter.setElementAt(Double.valueOf(0), i);
+        }
         int numInstance = data.numInstances();
-        System.out.println(classCounter.elementAt(0));
         for (int i=0;i<numInstance;i++){
             int cv = (int) data.instance(i).classValue();
-            System.out.println(cv);
             classCounter.setElementAt(classCounter.elementAt(cv)+1, cv);
         }
-        for (int i=0;i<numInstance;i++){
+        for (int i=0;i<data.numClasses();i++){
             if (classCounter.elementAt(i)>0){
                 entropy -= classCounter.elementAt(i) * Utils.log2(classCounter.elementAt(i));
             }
@@ -67,8 +69,11 @@ public class MyID3 extends Classifier{
     }
     
     private Vector<Instances> split(Instances data, Attribute attr){
-        Vector<Instances> group = new Vector<Instances>(attr.numValues()); 
-        for (int i=0;i<attr.numValues();i++){
+        Vector<Instances> group = new Vector<Instances>(attr.numValues());
+        for (int i = 0; i < attr.numValues(); i++) {
+            group.add(new Instances(data, data.numInstances()));
+        }
+        for (int i=0;i<data.numInstances();i++){
             int av = (int) data.instance(i).value(attr);
             group.elementAt(av).add(data.instance(i));
         }
@@ -93,12 +98,16 @@ public class MyID3 extends Classifier{
     private void makeTree(Instances trainingData) {
         if (trainingData.numInstances() == 0){
             attrSeparator = null;
-            result = new Vector<>(trainingData.numClasses());
+            result = new double[trainingData.numClasses()];
             classValue = Instance.missingValue();
             return;
         }
         
-        Vector<Double> listIG =  new Vector<Double>(trainingData.numAttributes());
+        Vector<Double> listIG =  new Vector<Double>();
+        listIG.setSize(trainingData.numAttributes());
+        for (int i=0;i<listIG.size();i++){
+            listIG.setElementAt(Double.valueOf(0), i);
+        }
         for (int i=0;i<trainingData.numAttributes();i++){
             Attribute attr = trainingData.attribute(i);
             int attrIndex = attr.index();
@@ -110,24 +119,20 @@ public class MyID3 extends Classifier{
         // Build Tree
         if (listIG.elementAt(index) == 0){
             attrSeparator = null;
-            result = new Vector<Double>(trainingData.numClasses());
-            for (int i=0;i<trainingData.numInstances();i++){
-                int cv = (int) trainingData.instance(i).classValue();
-                result.setElementAt(result.elementAt(cv)+1, cv);
+            result = new double[trainingData.numClasses()];
+            for (int i=0;i<result.length;i++){
+                result[(int)trainingData.instance(i).classValue()]++;
             }
-            // Change Vector to Double
-            double[] arrResult = new double[result.size()];
-            for (int i=0;i<arrResult.length;i++){
-                arrResult[i] = result.elementAt(i);
-            }
-            Utils.normalize(arrResult);
-            classValue = Utils.maxIndex(arrResult);
+            Utils.normalize(result);
+            classValue = Utils.maxIndex(result);
+            classAttribute = trainingData.classAttribute();
         }
         else{
             Vector<Instances> newData = split(trainingData,attrSeparator);
-            child = new Vector<>(attrSeparator.numValues());
-            for (int i=0;i<child.size();i++){
-                child.elementAt(i).makeTree(newData.elementAt(i));
+            child = new MyID3[attrSeparator.numValues()];
+            for (int i=0;i<child.length;i++){
+                child[i] = new MyID3();
+                child[i].makeTree(newData.elementAt(i));
             }
         }
     }
@@ -149,7 +154,7 @@ public class MyID3 extends Classifier{
             return classValue;
         }
         else{
-            return child.elementAt((int) testingData.value(attrSeparator)).classifyInstance(testingData);
+            return child[(int) testingData.value(attrSeparator)].classifyInstance(testingData);
         }
     }    
     
@@ -158,14 +163,10 @@ public class MyID3 extends Classifier{
         if (instance.hasMissingValue()) {
           throw new NoSupportForMissingValuesException("MyID3 can't handle such missing value");
         }
-        double[] arrResult = new double[result.size()];
         if (attrSeparator == null) {
-            for (int i=0;i<result.size();i++){
-                arrResult[i] = result.elementAt(i);
-            }
-            return arrResult;
+            return result;
         } else { 
-            return child.elementAt((int) instance.value(attrSeparator)).distributionForInstance(instance);
+            return child[(int) instance.value(attrSeparator)].distributionForInstance(instance);
         }
     }
 }
