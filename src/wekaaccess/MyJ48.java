@@ -7,12 +7,8 @@ package wekaaccess;
 import java.util.Collections;
 import java.util.Vector;
 import weka.classifiers.Classifier;
-import weka.core.Attribute;
-import weka.core.Capabilities;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.NoSupportForMissingValuesException;
-import weka.core.Utils;
+import weka.classifiers.trees.j48.C45PruneableClassifierTree;
+import weka.core.*;
 
 /**
  *
@@ -160,11 +156,10 @@ public class MyJ48 extends Classifier{
         for (int i=0;i<listGR.size();i++){
             listGR.setElementAt(Double.valueOf(0), i);
         }
-        for (int i=0;i<trainingData.numAttributes();i++){
+        for (int i=0;i<trainingData.numAttributes()-2;i++){
             Attribute attr = trainingData.attribute(i);
             int attrIndex = attr.index();
             listGR.setElementAt(computeGR(trainingData, attr), attrIndex);
-            System.out.println("attr ke "+i+" : "+listGR.elementAt(attrIndex));
         }
         int index = listGR.indexOf(Collections.max(listGR));
         attrSeparator = trainingData.attribute(index);
@@ -185,8 +180,6 @@ public class MyJ48 extends Classifier{
             Vector<Instances> newData = split(trainingData,attrSeparator);
             child = new MyJ48[attrSeparator.numValues()];
             for (int i=0;i<child.length;i++){
-//                System.out.println("attr separator : "+attrSeparator);
-//                System.out.println("attr value ke : "+i);
                 child[i] = new MyJ48();
                 child[i].makeTree(newData.elementAt(i));
             }
@@ -232,6 +225,7 @@ public class MyJ48 extends Classifier{
         if (attrSeparator == null) {
             return result;
         } else { 
+            System.out.println((int) instance.value(attrSeparator));
             return child[(int) instance.value(attrSeparator)].distributionForInstance(instance);
         }
     }
@@ -264,5 +258,25 @@ public class MyJ48 extends Classifier{
                 }
             }
         }
+    }
+    
+    public void prune(){
+        double errorsLeaf;
+        double errorsTree;
+        int indexOfLargestBranch;
+        C45PruneableClassifierTree largestBranch;
+        int i;
+        boolean isLeaf = false;
+        
+        if(!isLeaf){
+            //prune subtrees
+            
+            //compute error if tree would be leaf
+            
+            //compute error for the whole subtree
+            
+            //decide if leaf is the best choice
+        }
+    
     }
 }
